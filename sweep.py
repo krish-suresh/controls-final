@@ -20,7 +20,8 @@ time.sleep(3)
 
 data = []
 for i in reversed(range(0, 255)):
-    v = -12 * i/255
+    # v = -12 * i/255
+    v = -i
     arduino.write((0).to_bytes(1, 'big'))
     arduino.write((i).to_bytes(1, 'big'))
     measurement = arduino.readline()
@@ -29,7 +30,8 @@ for i in reversed(range(0, 255)):
         data.append([v, int(measurement.strip())])
 
 for i in range(0, 255):
-    v = 12 * i/255
+    # v = 12 * i/255
+    v = i
     arduino.write((i).to_bytes(1, 'big'))
     arduino.write((0).to_bytes(1, 'big'))
     measurement = arduino.readline()
@@ -39,7 +41,7 @@ for i in range(0, 255):
 
 
 data = np.array(data)
-
+np.save("sweep.npy", data)
 plt.plot(data[:, 0], data[:, 1])
 plt.xlabel("Voltage (V)")
 plt.ylabel("Hall Effect Sensor Reading")
