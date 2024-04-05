@@ -19,9 +19,9 @@ int sensor = 0;
 void loop() {
   // analogWrite(MOTOR_IN2, pwm2);
   // pwm2 = (pwm2 + 1 - 160) % 80 + 160; 
-  sensor = 512 - analogRead(SENSOR_PIN) - (pwm2 * -0.86462046 + 118);
+  sensor = 512 - analogRead(SENSOR_PIN) + (pwm1 * -0.86462046 + 118);
   sensor = constrain(sensor, 1, 5000);
-  Serial.print(pwm2);
+  Serial.print(pwm1);
   Serial.print(",");
   Serial.print(sensor);
   Serial.print(",");
