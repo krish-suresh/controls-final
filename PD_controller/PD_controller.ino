@@ -8,7 +8,7 @@
 #define MAG_LINE_FIT_SLOPE -0.86462046
 #define MAG_LINE_FIT_YINT 118
 
-#define K_P 650.0
+#define K_P 600.0
 #define K_D 0.17
 //1000 .445
 #define SERIAL false
