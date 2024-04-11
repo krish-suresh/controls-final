@@ -2,7 +2,7 @@
 #define MOTOR_IN2 5
 #define SENSOR_PIN A0
 
-int pwm1 = 200;
+int pwm1 = 190;
 int pwm2 = 0;
 
 void setup() {

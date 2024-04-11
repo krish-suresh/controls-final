@@ -2,15 +2,15 @@
 #define MOTOR_IN2 5
 #define SENSOR_PIN A0
 
-#define PWM_MID_POINT 200
-#define ERROR_OFFSET 0.2
+#define PWM_MID_POINT 175
+#define ERROR_OFFSET 0.15
 
 #define MAG_LINE_FIT_SLOPE -0.86462046
 #define MAG_LINE_FIT_YINT 118
 
-#define K_P 600.0
+#define K_P 700.0
+#define K_I 0.0
 #define K_D 0.17
-//1000 .445
 #define SERIAL false
 
 int sensor = 0;
@@ -20,6 +20,7 @@ int pwm = PWM_MID_POINT;
 unsigned long prevTime = 0;
 double prevError = 0;
 unsigned long lastPrintTime = 0;
+double errorSum = 0;
 
 void setup() {
   Serial.begin(9600);
@@ -39,8 +40,9 @@ void loop() {
   unsigned long curTime = micros();
 
   double timeDelta = (curTime - prevTime)*1E-6;
+  errorSum = timeDelta*error;
 
-  pwm = constrain(PWM_MID_POINT + K_P * error + K_D * (error - prevError)/ timeDelta, 0, 254);
+  pwm = constrain(PWM_MID_POINT + K_P * error + K_I*errorSum + K_D * (error - prevError)/ timeDelta, 0, 254);
   analogWrite(MOTOR_IN1, pwm);
 
   if (SERIAL && millis() - lastPrintTime > 50) {
