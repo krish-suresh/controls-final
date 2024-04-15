@@ -1,8 +1,8 @@
 #define MOTOR_IN1 6
-#define MOTOR_IN2 5
+#define MOTOR_IN2 9
 #define SENSOR_PIN A0
 
-int pwm1 = 190;
+int pwm1 = 170;
 int pwm2 = 0;
 
 void setup() {
@@ -18,13 +18,15 @@ void setup() {
 int sensor = 0;
 void loop() {
   analogWrite(MOTOR_IN1, pwm1);
-  // pwm2 = (pwm2 + 1 - 160) % 80 + 160; 
-  sensor = 512 - analogRead(SENSOR_PIN) + (pwm1 * -0.86462046 + 118);
+  // pwm1 = (pwm1 + 1 - 160) % 80 + 160; 
+  sensor = analogRead(SENSOR_PIN) - 512 + (pwm1 * - 0.65 - 69);
   sensor = constrain(sensor, 1, 5000);
+  Serial.print(analogRead(SENSOR_PIN));
+  Serial.print(",");
   Serial.print(pwm1);
   Serial.print(",");
   Serial.print(sensor);
   Serial.print(",");
-  Serial.println(1.0/sqrt(sensor), 5);
+  Serial.println(1.0/(sqrt(sensor)), 5);
   delay(50);
 }
