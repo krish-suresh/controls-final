@@ -1,6 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
+
 # Constants
 # Measured from the arduino
 dt_micros = 350
@@ -38,29 +39,20 @@ v_t = 0
 t_start = 0
 t_end = .05
 num_points = int(np.ceil((t_end - t_start) / dt))
-t = np.linspace(t_start, t_end, num_points)
+t_list = np.linspace(t_start, t_end, num_points)
 
+
+i = np.zeros(num_points)
 x = np.zeros(num_points)
 x[0] = x_0
 x[1] = x_0
-x[2] = x_0
+i[0] = i_0
+C_1 = 0.0
+C_2 = (-N**2 * u_0 * A**2)/2.0
+for t in range(0, num_points - 2):
+    i[t + 1] = i[t] + dt * (v_t - R * i[t]) / L
+    x[t + 2] = x[t + 1] + (2*x[t + 1] - x[t] + (dt**2)*(2*m*g*x_0*x[t]+x_0**2 + C_1/2.0 + 2*C_2*i_0*i[t] - i_0**2 ))/(m*x_0**2)
 
-print(num_points)
-for curr_t in range(0, num_points - 3):
-    d2xdt2 = (x[curr_t + 2] - 2 * x[curr_t + 1] + x[curr_t]) / dt**2
-    dxdt = (x[curr_t + 1] - x[curr_t]) / dt
-    x[curr_t + 3] = (
-        3 * x[curr_t + 2]
-        - 3 * x[curr_t + 1]
-        - x[curr_t]
-        - m * x_0 * R * d2xdt2 * dt**3
-        + 2 * m * g * x_0 * L * dxdt * dt**3
-        + 2 * m * g * x_0 * R * dt**3
-        - N**2 * u_0 * A**2 * i_0 * v_t * dt**3
-    ) / (m * x_0 * L)
 
-plt.plot(t, x)
-plt.xlim(t_start, t_end)
-# plt.ylim(-1, 1)
+plt.plot(t_list, x)
 plt.show()
-breakpoint()
