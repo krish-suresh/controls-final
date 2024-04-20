@@ -1,5 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
+from matplotlib.widgets import Button, Slider
 
 #### Constants
 # Measured from the arduino
@@ -78,11 +79,11 @@ i, x = simulate(K_P, K_D)
 
 fig, axs = plt.subplots(2)
 
-axs[0].plot(t_list, i, label='Current')
+line_i, = axs[0].plot(t_list, i, label='Current')
 axs[0].set(xlabel='Time [s]', ylabel='Current [A]')
 axs[0].legend()
 
-axs[1].plot(t_list, x, label=f"Non-linear model V={v_0:.2f}V")
+line_x, = axs[1].plot(t_list, x, label=f"Non-linear model V={v_0:.2f}V")
 # axs[1].hlines(
 #     GROUND,
 #     t_list[0],
@@ -93,6 +94,38 @@ axs[1].plot(t_list, x, label=f"Non-linear model V={v_0:.2f}V")
 # )
 axs[1].set(xlabel='Time [s]', ylabel='Magnet Position [m]')
 axs[1].legend()
-plt.tight_layout()
+
+fig.subplots_adjust(bottom=0.25)
+
+axkp = fig.add_axes([0.25, 0.1, 0.65, 0.03])
+kp_slider = Slider(
+    ax=axkp,
+    label='KP',
+    valmin=0,
+    valmax=200000,
+    valinit=K_P,
+)
+axkd = fig.add_axes([0.25, 0.05, 0.65, 0.03])
+kd_slider = Slider(
+    ax=axkd,
+    label='KD',
+    valmin=0,
+    valmax=30,
+    valinit=K_D,
+)
+
+def update(val):
+    i, x = simulate(kp_slider.val, kd_slider.val)
+    line_i.set_ydata(i)
+    line_x.set_ydata(x)
+    axs[0].set_ylim(min(i), max(i))
+    axs[1].set_ylim(min(x), max(x))
+    fig.canvas.draw_idle()
+
+
+kp_slider.on_changed(update)
+kd_slider.on_changed(update)
+
+# plt.tight_layout()
 plt.savefig("nonlinear_model.png")
 plt.show()
