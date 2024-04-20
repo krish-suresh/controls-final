@@ -10,7 +10,7 @@ t_end = 1.05  # seconds
 num_points = int(np.ceil((t_end - t_start) / dt))
 t_list = np.linspace(t_start, t_end, num_points)
 
-K_P = 1000.0
+K_P = 100000.0
 
 M_BIG_MAGNET = 0.5920  # g
 M_MED_MAGNET = 0.2307  # g
