@@ -1,9 +1,16 @@
 {
     "cSpell.words": [
+        "axkd",
+        "axkp",
         "hlines",
         "linestyles",
         "setpoint",
+        "valinit",
+        "valmax",
+        "valmin",
         "xlabel",
-        "ylabel"
+        "ydata",
+        "ylabel",
+        "ylim"
     ]
 }

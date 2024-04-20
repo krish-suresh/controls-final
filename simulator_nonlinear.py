@@ -7,12 +7,12 @@ from matplotlib.widgets import Button, Slider
 dt_micros = 350  # microseconds per loop
 dt = dt_micros / 10**6  # seconds
 t_start = 0  # seconds
-t_end = 1.05  # seconds
+t_end = 5.05  # seconds
 num_points = int(np.ceil((t_end - t_start) / dt))
 t_list = np.linspace(t_start, t_end, num_points)
 
-K_P = 100000.0
-K_D = 11.0
+K_P = 18000.0
+K_D = 4.5
 
 M_BIG_MAGNET = 0.5920  # g
 M_MED_MAGNET = 0.2307  # g
@@ -118,10 +118,11 @@ def update(val):
     i, x = simulate(kp_slider.val, kd_slider.val)
     line_i.set_ydata(i)
     line_x.set_ydata(x)
-    axs[0].set_ylim(min(i), max(i))
-    axs[1].set_ylim(min(x), max(x))
+    # axs[0].set_ylim(min(i), max(i))
+    # axs[1].set_ylim(min(x), max(x))
     fig.canvas.draw_idle()
 
+axs[1].set_ylim(MIN_DIST, x_0*2)
 
 kp_slider.on_changed(update)
 kd_slider.on_changed(update)
