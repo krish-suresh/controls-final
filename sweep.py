@@ -17,27 +17,27 @@ arduino.write((0).to_bytes(1, 'big'))
 arduino.write((254).to_bytes(1, 'big'))
 measurement = arduino.readline()
 time.sleep(3)
-
+# breakpoint()
 data = []
-for i in reversed(range(0, 255)):
+for i in reversed(range(0, 100)):
     # v = -12 * i/255
-    v = -i
-    arduino.write((0).to_bytes(1, 'big'))
+    v = -i / 100 * 255
+    # arduino.write((0).to_bytes(1, 'big'))
     arduino.write((i).to_bytes(1, 'big'))
     measurement = arduino.readline()
     print(f"{v:.2f} \t {measurement}")
     if measurement:
         data.append([v, int(measurement.strip())])
 
-for i in range(0, 255):
-    # v = 12 * i/255
-    v = i
-    arduino.write((i).to_bytes(1, 'big'))
-    arduino.write((0).to_bytes(1, 'big'))
-    measurement = arduino.readline()
-    print(f"{v:.2f} \t {measurement}")
-    if measurement:
-        data.append([v, int(measurement.strip())])
+# for i in range(0, 100):
+#     # v = 12 * i/255
+#     v = i
+#     arduino.write((i).to_bytes(1, 'big'))
+#     arduino.write((0).to_bytes(1, 'big'))
+#     measurement = arduino.readline()
+#     print(f"{v:.2f} \t {measurement}")
+#     if measurement:
+#         data.append([v, int(measurement.strip())])
 
 
 data = np.array(data)
