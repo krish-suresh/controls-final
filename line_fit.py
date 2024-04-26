@@ -1,9 +1,9 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-sweep = np.load("data/teensy_sweep.npy")
-r_s = 20
-r_e = 120
+sweep = np.load("data/better_sweep.npy")
+r_s = int(20 * 100 / 255)
+r_e = int(120 * 100 / 255)
 coefficients = np.polyfit(sweep[r_s:r_e, 0], sweep[r_s:r_e, 1], 1)
 polynomial = np.poly1d(coefficients)
 print(coefficients)
