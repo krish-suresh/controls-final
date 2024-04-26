@@ -8,6 +8,7 @@
         "valinit",
         "valmax",
         "valmin",
+        "valstep",
         "xlabel",
         "ydata",
         "ylabel",
