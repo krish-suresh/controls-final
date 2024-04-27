@@ -23,20 +23,20 @@ m = (
     + M_SMALL_MAGNET * NUM_SMALL_MAGNET
     + M_NUT * NUM_NUT
 ) / 1000  # kg
-x_0 = .005
+x_0 = 0.005
 R = 28.5  # Ohms
 g = 9.8  # m/s^2
-u_0 = 4 * np.pi * 10**(-7)
+u_0 = 4 * np.pi * 10 ** (-7)
 # TODO: Check this value
 N = 1500  # number of turns
-EM_DIAMETER = 0.034 # m
+EM_DIAMETER = 0.034  # m
 A = np.pi * (EM_DIAMETER / 2.0) ** 2  # m^2
-i_0 = np.sqrt((x_0**2 + 1)/(N**2*u_0*A**2))
+i_0 = np.sqrt((x_0**2 + 1) / (N**2 * u_0 * A**2))
 L = 0.051337  # H
 v_t = 0
 
 t_start = 0
-t_end = .05
+t_end = 0.05
 num_points = int(np.ceil((t_end - t_start) / dt))
 t = np.linspace(t_start, t_end, num_points)
 

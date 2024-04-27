@@ -20,10 +20,8 @@ measurement = arduino.readline()
 time.sleep(3)
 # breakpoint()
 data = []
-for i in reversed(range(0, 100)):
-    # v = -12 * i/255
-    v = -i / 100 * 255
-    # arduino.write((0).to_bytes(1, 'big'))
+for i in reversed(range(0, 255)):
+    v = -12 * i/255
     arduino.write((i).to_bytes(1, 'big'))
     measurement = arduino.readline()
     print(f"{v:.2f} \t {measurement}")
