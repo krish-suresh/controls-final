@@ -1,6 +1,7 @@
 import serial, time
 import numpy as np
 import matplotlib.pyplot as plt 
+import datetime
 
 arduino = serial.Serial()
 arduino.port = "/dev/ttyACM0"
@@ -40,10 +41,19 @@ for i in reversed(range(0, 100)):
 #         data.append([v, int(measurement.strip())])
 
 
-data = np.array(data)
-np.save("sweep.npy", data)
+# Get current datetime
+now = datetime.datetime.now()
+date_str = now.strftime("%Y%m%d_%H%M%S")
+
+# Add datetime to numpy save
+np.save(f"sweep_{date_str}.npy", data)
+
+# Add datetime to plot
 plt.plot(data[:, 0], data[:, 1])
+plt.title(f"Sweep - {date_str}")
 plt.xlabel("Voltage (V)")
 plt.ylabel("Hall Effect Sensor Reading")
-plt.savefig("sweep.png")
+
+# Add datetime to savefig
+plt.savefig(f"sweep_{date_str}.png")
 plt.show()
