@@ -1,29 +1,28 @@
-#define USE_ADC_V2 false
-
-#if USE_ADC_V2
-#include <directADC.h>
-#endif
+#define USE_ADC_V2 true
 
 #define MOTOR_IN1 11
 #define MOTOR_IN2 3
 
 #if USE_ADC_V2
-#define SENSOR_PIN ADC_A0
+  #include <directADC.h>
+  #define SENSOR_PIN ADC_A0
 #else
-#define SENSOR_PIN A0
+  #define SENSOR_PIN A0
 #endif
 
-#define PWM_MID_POINT 190
-#define ERROR_OFFSET 0.17
+#include "sensor_data.h"
+
+#define PWM_MID_POINT 150
+#define DISTANCE_SETPOINT 0.013
 
 #define MAG_LINE_FIT_SLOPE 0.8447
 #define MAG_LINE_FIT_YINT 400
 
-#define K_P 17000
-#define K_I 0
-#define K_D 2.3529
+#define K_P 1000.0
+#define K_I 0.0
+#define K_D 1.0
 
-#define SERIAL_PRINT true
+#define SERIAL_PRINT false
 
 int sensor = 0;
 int sensor_raw = 0;
@@ -61,15 +60,6 @@ void setup() {
 }
 
 void loop() {
-  // if (num_times < 100) {
-  //   times[num_times] = micros();
-  //   num_times++;
-  // } else {
-  //   num_times = 0;
-  //   for (int i = 0; i < 99; i++) {
-  //     Serial.println(times[i+1] - times[i]);
-  //   }
-  // }
 
 #if USE_ADC_V2
   ADC_startConvert();
@@ -80,27 +70,34 @@ void loop() {
   int sensor_raw = analogRead(SENSOR_PIN);
   sensor = sensor_raw - (pwm * MAG_LINE_FIT_SLOPE + MAG_LINE_FIT_YINT);
 #endif
-
-  sensor = constrain(sensor, 1, 5000);
-  double error = (1.0/sqrt(sensor)) - ERROR_OFFSET; // TODO Add Setpoint
+  sensor = (sensor) / 2; 
+  sensor = constrain(sensor, 0, 256);
+  
+  double error = SENSOR_LOOKUP_TABLE[sensor] - DISTANCE_SETPOINT;
   
   unsigned long curTime = micros();
 
   double timeDelta = (curTime - prevTime)*1E-6;
   errorSum += timeDelta*error;
 
-  // pwm = constrain(PWM_MID_POINT + K_P * error + K_I*errorSum + K_D * (error - prevError)/ timeDelta, 0, 254);
-  OCR2A = constrain(PWM_MID_POINT + K_P * error + K_D * (error - prevError)/ timeDelta, 0, 255);
+  pwm = constrain(PWM_MID_POINT + K_P * error + K_I*errorSum + K_D * (error - prevError)/ timeDelta, 0, 255);
+  OCR2A = pwm;
 
 
   if (SERIAL_PRINT && millis() - lastPrintTime > 200) {
+    Serial.print(SENSOR_LOOKUP_TABLE[sensor], 5);
+    Serial.print(",");
     Serial.print(error, 5);
     Serial.print(",");
-    Serial.print(K_I*errorSum, 1);
-    Serial.print(",");
-    Serial.print(pwm);
-    Serial.print(",");
-    Serial.println(sensor);
+    // Serial.print(K_I*errorSum, 1);
+    // Serial.print(",");
+    Serial.println(pwm);
+    // Serial.print(",");
+    // Serial.print(sensor_raw);
+    // Serial.print(",");
+    // Serial.print((pwm * MAG_LINE_FIT_SLOPE + MAG_LINE_FIT_YINT));
+    // Serial.print(",");
+    // Serial.println(sensor);
     lastPrintTime = millis();
   }
   prevTime = curTime;
