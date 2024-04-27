@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 
-sweep = np.load("data/better_sweep.npy")
+sweep = np.load("data/sweep_20240426_221109.npy")
 r_s = int(20 * 100 / 255)
 r_e = int(120 * 100 / 255)
 coefficients = np.polyfit(sweep[r_s:r_e, 0], sweep[r_s:r_e, 1], 1)

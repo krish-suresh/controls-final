@@ -46,6 +46,7 @@ date_str = now.strftime("%Y%m%d_%H%M%S")
 # Add datetime to numpy save
 np.save(f"sweep_{date_str}.npy", data)
 
+data = np.array(data)
 # Add datetime to plot
 plt.plot(data[:, 0], data[:, 1])
 plt.title(f"Sweep - {date_str}")
