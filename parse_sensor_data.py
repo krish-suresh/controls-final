@@ -8,6 +8,9 @@ data = pd.read_csv('data/sensor_data_200pwm.csv')
 # Transform the data
 x_data = data['Analog Reading'].to_numpy()
 y_data = data['Gap Distance (mm) from sensor'].to_numpy()/1000.0
+pwm_value = .8447 * 200 + 400
+x_data = x_data - pwm_value
+
 
 # Fit a polynomial of degree 2 to the data
 coefficients = np.polyfit(x_data, y_data, 8)
@@ -20,15 +23,15 @@ def exp_decay(x, a, b, c):
 
 
 # Fit the function to the data
-popt_exp, pcov_exp = curve_fit(exp_decay, x_data, y_data, p0=(1000, 1, 10))
+popt_exp, pcov_exp = curve_fit(exp_decay, x_data, y_data)
 
 
 
 # Plot the fitted polynomial
 x = np.linspace(min(x_data), max(x_data), 1000)
 
-START_IDX = 512
-END_IDX = 1022
+START_IDX = 0
+END_IDX = 508
 with open('PD_controller/sensor_data.h', 'w') as f:
     f.write("#ifndef SENSOR_DATA_H\n")
     f.write("#define SENSOR_DATA_H\n")
@@ -43,7 +46,7 @@ plt.plot(x_data, y_data, 'o', label='data')
 plt.plot(x, polynomial(x), 'b-', label='fit: %s' % polynomial)
 plt.plot(x_data, exp_decay(x_data, *popt_exp), label='Exponential Decay Fit', color='red')
 
-plt.xlabel('Gap Distance (mm) from sensor')
-plt.ylabel('Analog Reading')
+plt.ylabel('Gap Distance (mm) from sensor')
+plt.xlabel('Analog Reading')
 plt.legend()
 plt.show()
