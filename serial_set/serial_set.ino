@@ -12,14 +12,19 @@ void setup() {
   OCR2A = 200;
   OCR2B = 0;
 
+  ADCSRA = (1 << ADEN) | (1 << ADPS2) | (1 << ADPS1) | (1 << ADPS0);
+  ADMUX |= (1 << REFS0);
+
   delay(50);
 }
 
 void loop() {
-  // if (Serial.available() > 0) {
-  //   OCR2A = Serial.read();
+  if (Serial.available() > 0) {
+    OCR2A = Serial.read();
 
     delay(300);
-    Serial.println(analogRead(SENSOR_PIN));
-  // }
+    ADCSRA |= (1 << ADSC);
+    while(!((ADCSRA >> ADIF) & 1)) {}
+    Serial.println(ADC);
+  }
 }
