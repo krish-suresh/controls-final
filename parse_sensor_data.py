@@ -6,21 +6,27 @@ from scipy.optimize import curve_fit
 data = pd.read_csv('data/sensor_data_200pwm.csv')
 
 # Transform the data
-x_data = data['Analog Reading'].to_numpy()
-y_data = data['Gap Distance (mm) from sensor'].to_numpy()/1000.0
+x_data = data['Gap Distance (mm) from sensor'].to_numpy()/1000.0
+y_data = data['Analog Reading'].to_numpy()
 
-# Fit a polynomial of degree 2 to the data
+# x_data =(x_data-512)/512.0
+y_data = (((y_data/1023) * 5000) - 2500) / (12.5*(1+0.0012*(20-25)))
+
+
 coefficients = np.polyfit(x_data, y_data, 8)
 polynomial = np.poly1d(coefficients)
 
 
 def exp_decay(x, a, b, c):
-    # return a * np.exp(-b * x) + c
     return np.log((x - c)/a)/-b
+
+def sqrt_inv(x, a, b):
+    return a / x + b
 
 
 # Fit the function to the data
 popt_exp, pcov_exp = curve_fit(exp_decay, x_data, y_data, p0=(1000, 1, 10))
+popt_sqrt, pcov_sqrt = curve_fit(sqrt_inv, x_data, y_data)
 
 
 
@@ -40,10 +46,14 @@ with open('PD_controller/sensor_data.h', 'w') as f:
     f.write("#endif\n")
 
 plt.plot(x_data, y_data, 'o', label='data')
-plt.plot(x, polynomial(x), 'b-', label='fit: %s' % polynomial)
-plt.plot(x_data, exp_decay(x_data, *popt_exp), label='Exponential Decay Fit', color='red')
+plt.plot(x, polynomial(x), label='Polynomial Fit')
+# plt.plot(x_data, exp_decay(x_data, *popt_exp), label='Exponential Decay Fit', color='red')
+# plt.plot(x_data, sqrt_inv(x_data, *popt_sqrt), label='Sqrt Fit', color='green')
+PM_GAP = 0.005
+print(f" Flux at {PM_GAP}m gap: {polynomial(PM_GAP)/1000:.5f} T")
 
-plt.xlabel('Gap Distance (mm) from sensor')
-plt.ylabel('Analog Reading')
+plt.xlabel('Gap Distance (m) from sensor')
+plt.ylabel('Magnetic Flux [mT]')
 plt.legend()
+plt.savefig('sensor_data_fit.png')
 plt.show()
