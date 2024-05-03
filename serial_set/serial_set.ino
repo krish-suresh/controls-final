@@ -1,12 +1,12 @@
 #define SENSOR_PIN A0
 
-#define PWM_START 151
+#define PWM_START 0
 
 bool read = false;
 int start = 0;
 // Matching the frequency of the Teensy
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(3, OUTPUT);
   pinMode(11, OUTPUT);
   TCCR2A = _BV(COM2A1) | _BV(COM2B1) | _BV(WGM21) | _BV(WGM20);
@@ -28,7 +28,7 @@ void loop() {
     start = millis();
   }
 
-  if (read && millis() - start > 200) {
+  if (read && millis() - start > 2000) {
     int sensorValue = analogRead(SENSOR_PIN);
 
     byte highByte = (sensorValue >> 8) & 0xFF;

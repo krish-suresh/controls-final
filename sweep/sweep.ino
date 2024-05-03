@@ -1,12 +1,16 @@
-#define MOTOR_IN1 6
-#define MOTOR_IN2 9
+#define MOTOR_IN1 11
+#define MOTOR_IN2 3
 #define SENSOR_PIN A0
 
-int pwm1 = 170;
+int pwm1 = 200;
 int pwm2 = 0;
 
+#define BUFFER_LEN (20)
+int reading_buffer[BUFFER_LEN] = { 0 };
+int reading_counter = 0;
+
 void setup() {
-  Serial.begin(9600);
+  Serial.begin(115200);
   pinMode(MOTOR_IN1, OUTPUT);
   pinMode(MOTOR_IN2, OUTPUT);
   digitalWrite(MOTOR_IN1, LOW);
@@ -19,9 +23,20 @@ int sensor = 0;
 void loop() {
   analogWrite(MOTOR_IN1, pwm1);
   // pwm1 = (pwm1 + 1 - 160) % 80 + 160; 
-  sensor = analogRead(SENSOR_PIN) - 512 + (pwm1 * - 0.65 - 69);
+  int sensor_raw = analogRead(SENSOR_PIN);
+  sensor = sensor_raw - 512 + (pwm1 * - 0.65 - 69);
   sensor = constrain(sensor, 1, 5000);
-  Serial.print(analogRead(SENSOR_PIN));
+  reading_buffer[reading_counter] = sensor_raw;
+  reading_counter++;
+  if (reading_counter == BUFFER_LEN) {
+    reading_counter = 0;
+  }
+  int sensor_avg = 0;
+  for (int i = 0; i< BUFFER_LEN; i++) {
+    sensor_avg += reading_buffer[i];
+  }
+  sensor_avg /= BUFFER_LEN;
+  Serial.print(sensor_avg);
   Serial.print(",");
   Serial.print(pwm1);
   Serial.print(",");

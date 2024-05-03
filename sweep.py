@@ -5,7 +5,7 @@ import datetime
 
 arduino = serial.Serial()
 arduino.port = "/dev/ttyACM0"
-arduino.baudrate = 9600
+arduino.baudrate = 115200
 arduino.setDTR(False)
 arduino.setRTS(True)
 arduino.open()
@@ -17,7 +17,7 @@ arduino.write((0).to_bytes(1, 'big'))
 arduino.write((254).to_bytes(1, 'big'))
 time.sleep(3)
 
-PWM_START = 151
+PWM_START = 0
 PWM_END = 255
 data = []
 for i in range(0, PWM_END-PWM_START):

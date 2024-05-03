@@ -27,7 +27,7 @@ F = [float(f) for f in F]
 # Define the function to fit
 def func(data, a, b):
     PWM, X = data
-    return a - b * (PWM**2) / X**2
+    return a - b * (PWM) / X**3
 
 
 # Prepare the data for curve_fit

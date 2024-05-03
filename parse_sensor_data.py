@@ -3,22 +3,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 from scipy.optimize import curve_fit
 
-data = pd.read_csv('data/sensor_data_200pwm.csv')
+data = pd.read_csv('data/anusha_mag_dist.csv')
 
 # Transform the data
-<<<<<<< HEAD
-x_data = data['Gap Distance (mm) from sensor'].to_numpy()/1000.0
-y_data = data['Analog Reading'].to_numpy()
-
-# x_data =(x_data-512)/512.0
-y_data = (((y_data/1023) * 5000) - 2500) / (12.5*(1+0.0012*(20-25)))
-=======
 x_data = data['Analog Reading'].to_numpy()
 y_data = data['Gap Distance (mm) from sensor'].to_numpy()/1000.0
+
 pwm_value = .8447 * 200 + 400
 x_data = x_data - pwm_value
->>>>>>> 6f6a51cf28ef4f6ab778a0b66f3eeadde2a787ca
-
 
 coefficients = np.polyfit(x_data, y_data, 8)
 polynomial = np.poly1d(coefficients)
@@ -41,33 +33,28 @@ popt_sqrt, pcov_sqrt = curve_fit(sqrt_inv, x_data, y_data)
 x = np.linspace(min(x_data), max(x_data), 1000)
 
 START_IDX = 0
-END_IDX = 508
+END_IDX = 512
 with open('PD_controller/sensor_data.h', 'w') as f:
     f.write("#ifndef SENSOR_DATA_H\n")
     f.write("#define SENSOR_DATA_H\n")
     f.write(f"float SENSOR_LOOKUP_TABLE[{(END_IDX-START_IDX)//2  + 1}] = {{\n")
     for i in range(START_IDX, END_IDX, 2):
-        f.write(f"\t{polynomial(i)},\n")
-    f.write(f"\t{polynomial(END_IDX)}\n")
+        val = exp_decay(i, *popt_exp)
+        if np.isnan(val):
+            val = 0.03099675996838122
+        f.write(f"\t{val},\n")
+    f.write(f"\t{exp_decay(i, *popt_exp)}\n")
     f.write("};\n")
     f.write("#endif\n")
 
 plt.plot(x_data, y_data, 'o', label='data')
-plt.plot(x, polynomial(x), label='Polynomial Fit')
-# plt.plot(x_data, exp_decay(x_data, *popt_exp), label='Exponential Decay Fit', color='red')
+#plt.plot(x, polynomial(x), label='Polynomial Fit')
+plt.plot(x_data, exp_decay(x_data, *popt_exp), label='Exponential Decay Fit', color='red')
 # plt.plot(x_data, sqrt_inv(x_data, *popt_sqrt), label='Sqrt Fit', color='green')
 PM_GAP = 0.005
 print(f" Flux at {PM_GAP}m gap: {polynomial(PM_GAP)/1000:.5f} T")
 
-<<<<<<< HEAD
-plt.xlabel('Gap Distance (m) from sensor')
-plt.ylabel('Magnetic Flux [mT]')
-plt.legend()
-plt.savefig('sensor_data_fit.png')
-plt.show()
-=======
 plt.ylabel('Gap Distance (mm) from sensor')
 plt.xlabel('Analog Reading')
 plt.legend()
 plt.show()
->>>>>>> 6f6a51cf28ef4f6ab778a0b66f3eeadde2a787ca
