@@ -54,7 +54,8 @@ plt.plot(x_data, exp_decay(x_data, *popt_exp), label='Exponential Decay Fit', co
 PM_GAP = 0.005
 print(f" Flux at {PM_GAP}m gap: {polynomial(PM_GAP)/1000:.5f} T")
 
-plt.ylabel('Gap Distance (mm) from sensor')
-plt.xlabel('Analog Reading')
+plt.ylabel('Gap Distance From Sensor [mm]')
+plt.xlabel('Analog Reading [counts]')
+plt.title("Hall Effect Sensor Characterization")
 plt.legend()
-plt.show()
+plt.savefig("imgs/he_char.png")
