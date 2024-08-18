@@ -3,16 +3,16 @@
 
 #include "sensor_data.h"
 
-#define PWM_MID_POINT 170
+#define PWM_MID_POINT 200
 #define VOLTAGE_MID_POINT PWM_MID_POINT / 255 * 12.0
-#define DISTANCE_SETPOINT 0.014
+#define DISTANCE_SETPOINT 0.0058
 
-#define MAG_LINE_FIT_SLOPE 0.79
-#define MAG_LINE_FIT_YINT 408
-#define K 2
-#define K_P 80000.0 * K
+#define MAG_LINE_FIT_SLOPE 0.77
+#define MAG_LINE_FIT_YINT 415
+#define K 1
+#define K_P 45000.0 * K
 #define K_I 0
-#define K_D 50 * K
+#define K_D 40 * K
 #define SERIAL_PRINT false
 
 #define SENSOR_BUFFER_LEN (70)
@@ -34,7 +34,7 @@ double error = 0;
 unsigned long curTime = 0;
 double timeDelta = 0;
 int pwm_avg = 0;
-float alpha = 0.15;
+float alpha = 0.2;
 
 void setup() {
   Serial.begin(500000);
@@ -70,8 +70,8 @@ void loop() {
   // sensor_raw = ADC;
   sensor_raw = analogRead(A0);
 
-  // pwm_avg = (alpha * pwm) + ((1 - alpha) * pwm_avg);
-  pwm_avg = pwm;
+  pwm_avg = (alpha * pwm) + ((1 - alpha) * pwm_avg);
+  // pwm_avg = pwm;
 
   sensor = sensor_raw - (pwm_avg * MAG_LINE_FIT_SLOPE + MAG_LINE_FIT_YINT);
   sensor = constrain(sensor, 0, 512);
@@ -104,6 +104,8 @@ void loop() {
   float curr_der = K_D * (error - prevError) / timeDelta;
 
   pwm = constrain(PWM_MID_POINT + K_P * error + K_I*errorSum + curr_der, 150, 255);
+  // pwm++;
+  // pwm = (pwm-150)%105 + 150;
   OCR2A = pwm;
 
   if (SERIAL_PRINT && millis() - lastPrintTime > 1) {
@@ -120,9 +122,12 @@ void loop() {
     Serial.print(",");
     Serial.print("error:");
     Serial.print(error, 5);
-
-    // Serial.print("pwm:");
-    // Serial.print(pwm * MAG_LINE_FIT_SLOPE + MAG_LINE_FIT_YINT);
+    Serial.print(",");
+    Serial.print("pwm_cancel:");
+    Serial.print((pwm_avg * MAG_LINE_FIT_SLOPE + MAG_LINE_FIT_YINT));
+    Serial.print(",");
+    Serial.print("sensor_raw:");
+    Serial.print(sensor_raw);
     // Serial.print(pwm_old);
     // Serial.print(",");
     // Serial.print("pwm_avg:");
