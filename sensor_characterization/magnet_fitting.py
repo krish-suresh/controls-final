@@ -27,7 +27,7 @@ F = [float(f) for f in F]
 # Define the function to fit
 def func(data, a, b):
     PWM, X = data
-    return a - b * (PWM) / X**3
+    return a - b * (PWM)**2 / X**2
 
 
 # Prepare the data for curve_fit
@@ -54,8 +54,9 @@ PWM_range, X_range = np.meshgrid(PWM_range, X_range)
 F_fit = func((PWM_range, X_range), *popt)
 ax.plot_surface(PWM_range, X_range, F_fit, alpha=0.5, rstride=100, cstride=100)
 
-ax.set_xlabel("PWM")
-ax.set_ylabel("X")
-ax.set_zlabel("F")
+ax.set_xlabel("PWM [counts]")
+ax.set_ylabel("X [m]")
+ax.set_zlabel("F [N]")
+plt.title("Electromagnet Force Characterization")
 
-plt.show()
+plt.savefig("imgs/em_force_char.png")
